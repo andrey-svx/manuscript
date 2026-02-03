@@ -1,5 +1,9 @@
 # 📜 Manuscript
 
+![Swift 5.9+](https://img.shields.io/badge/Swift-5.9+-orange.svg)
+![macOS 13+](https://img.shields.io/badge/macOS-13+-blue.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 **Stop typing test data manually.** Manuscript auto-fills forms on your iOS Simulator using simple YAML configs.
 
 No test frameworks. No code injection. No rebuilding. Just run a command and watch the magic.
@@ -13,6 +17,7 @@ No test frameworks. No code injection. No rebuilding. Just run a command and wat
 ```bash
 git clone https://github.com/andrey-svx/manuscript.git
 cd manuscript
+git checkout 1.0.0
 make install
 ```
 
@@ -31,7 +36,7 @@ steps:
 ### 3. Run
 
 ```bash
-manuscript run login.yaml --local
+manuscript run login.yaml --current
 ```
 
 ✅ Done! Your simulator form is filled.
@@ -46,8 +51,8 @@ Perfect for instant testing. Keep YAML files wherever you want:
 
 ```bash
 # Run from any location
-manuscript run ~/Desktop/checkout.yaml --local
-manuscript run ./test-data/profile.yaml --local
+manuscript run ~/Desktop/checkout.yaml --current
+manuscript run ./test-data/profile.yaml --current
 ```
 
 ### Pattern B: Team Integration (Project Folder)
@@ -86,7 +91,7 @@ Manuscript finds fields using **4 smart strategies** (in order):
 name: "Bank Transfer"
 steps:
   - target: "transfer_recipient"      # Found by ID
-    value: "Elon Musk"
+    value: "John Doe"
     
   - target: "Beneficiary IBAN"        # Found by label
     value: "DE89370400440532013000"
@@ -124,6 +129,19 @@ manuscript --help          # All commands
 manuscript run --help      # Run options
 manuscript init --help     # Project setup
 ```
+
+---
+
+## 💬 Feedback
+
+Found a bug or have a feature request?  
+→ [Open an Issue](https://github.com/andrey-svx/manuscript/issues)
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first.
 
 ---
 

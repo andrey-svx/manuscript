@@ -7,7 +7,7 @@ extension ResolutionScope: EnumerableFlag {
     public static func help(for value: ResolutionScope) -> ArgumentHelp? {
         switch value {
         case .project: return "Search in .manuscript folder (default)."
-        case .local: return "Search in current directory."
+        case .current: return "Search in current directory."
         case .global: return "Search in global templates."
         }
     }
