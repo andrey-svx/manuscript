@@ -1,19 +1,18 @@
 import Foundation
 
 struct ManuscriptConfig: Decodable {
-    struct Field: Decodable {
-        let id: String?
+    let name: String
+    let description: String
+    let steps: [Step]
+
+    struct Step: Decodable {
+        let type: StepType
+        let target: String
         let value: String?
-        let label: String?
-        let placeholder: String?
-        
-        var displayName: String {
-            if let id = id { return id }
-            if let label = label { return "Label: \(label)" }
-            if let placeholder = placeholder { return "Placeholder: \(placeholder)" }
-            return "Unnamed Field"
-        }
     }
-    let title: String
-    let fields: [Field]
+
+    enum StepType: String, Decodable {
+        case input
+        case tap // Reserved for future use
+    }
 }

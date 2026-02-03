@@ -26,7 +26,8 @@ struct Manuscript: ParsableCommand {
             return // logError exits, but just in case
         }
         
-        log("\n📜 Manuscript: \(ANSI.bold)\(config.title)\(ANSI.reset)", color: ANSI.yellow)
+        log("\n📜 Manuscript: \(ANSI.bold)\(config.name)\(ANSI.reset)", color: ANSI.yellow)
+        log("   \(config.description)", color: ANSI.gray)
         log("-----------------------------------------")
         
         // 1. Get all booted simulators
@@ -75,65 +76,72 @@ struct Manuscript: ParsableCommand {
         
         log("\n--- Execution Report ---\n", color: ANSI.bold)
         
-        var foundCount = 0
-        var missingCount = 0
+        var successCount = 0
+        var failCount = 0
         
-        for expected in config.fields {
+        for step in config.steps {
             var foundElement: AXUIElement?
             var strategyUsed = ""
             
+            // Try all strategies to find the target
+            
             // Strategy 1: ID
-            if foundElement == nil, let id = expected.id {
-                foundElement = AccessibilityScanner.findElementByID(root: window, id: id)
+            if foundElement == nil {
+                foundElement = AccessibilityScanner.findElementByID(root: window, id: step.target)
                 if foundElement != nil { strategyUsed = "ID" }
             }
             
             // Strategy 2: Label (Anchor)
-            if foundElement == nil, let label = expected.label {
-                foundElement = AccessibilityScanner.findFieldByLabel(root: window, label: label)
+            if foundElement == nil {
+                foundElement = AccessibilityScanner.findFieldByLabel(root: window, label: step.target)
                 if foundElement != nil { strategyUsed = "Label Anchor" }
             }
             
             // Strategy 3: Placeholder
-            if foundElement == nil, let placeholder = expected.placeholder {
-                foundElement = AccessibilityScanner.findFieldByPlaceholder(root: window, placeholder: placeholder)
+            if foundElement == nil {
+                foundElement = AccessibilityScanner.findFieldByPlaceholder(root: window, placeholder: step.target)
                 if foundElement != nil { strategyUsed = "Placeholder" }
             }
             
-            // Strategy 4: Value Match
-            if foundElement == nil, let val = expected.value {
-                foundElement = AccessibilityScanner.findFieldByValue(root: window, value: val)
-                if foundElement != nil { strategyUsed = "Value Match (Already Filled)" }
+            // Strategy 4: Value Match (Pre-filled content)
+            if foundElement == nil {
+                foundElement = AccessibilityScanner.findFieldByValue(root: window, value: step.target)
+                if foundElement != nil { strategyUsed = "Value Match" }
             }
             
             if let element = foundElement {
-                foundCount += 1
-                print("\(ANSI.green)[OK]\(ANSI.reset) Found '\(expected.displayName)' via \(strategyUsed)")
+                successCount += 1
+                print("\(ANSI.green)[OK]\(ANSI.reset) Found '\(step.target)' via \(strategyUsed)")
                 
-                if let valueToEnter = expected.value {
-                    if strategyUsed == "Value Match (Already Filled)" {
-                        print("     Action: Skipped (Already contains \"\(valueToEnter)\")")
-                    } else {
+                switch step.type {
+                case .input:
+                    if let valueToEnter = step.value {
                         if AccessibilityScanner.enterText(element: element, text: valueToEnter) {
                             print("     Action: Entered \"\(valueToEnter)\"")
                         } else {
                             print("     Action: \(ANSI.red)Failed to enter text\(ANSI.reset)")
+                            failCount += 1 // Count partial failure as fail? Or warning? Let's count logic errors.
                         }
+                    } else {
+                         // Read mode if no value provided (optional feature)
+                         let val = AccessibilityScanner.getValueOrDesc(element)
+                         print("     Value: \"\(val)\"")
                     }
-                } else {
-                    let val = AccessibilityScanner.getValueOrDesc(element)
-                    print("     Value: \"\(val)\"")
+                case .tap:
+                    // Future implementation
+                    print("     Action: Tap (Not implemented)")
                 }
+                
             } else {
-                missingCount += 1
-                print("\(ANSI.red)[MISSING]\(ANSI.reset) '\(expected.displayName)' not found")
+                failCount += 1
+                print("\(ANSI.red)[MISSING]\(ANSI.reset) Target '\(step.target)' not found")
             }
         }
         
         print("\n-----------------------")
-        print("Total: \(config.fields.count) | Found: \(foundCount) | Missing: \(missingCount)")
+        print("Total Steps: \(config.steps.count) | Success: \(successCount) | Failed: \(failCount)")
         
-        if missingCount > 0 {
+        if failCount > 0 {
             throw ExitCode(1)
         }
     }
