@@ -1,14 +1,11 @@
 name: "Demo Error"
 description: "Tries to fill fields with invalid data"
 steps:
-  - type: input
-    target: "transfer_recipient"
+  - target: "transfer_recipient"
     value: ""
     
-  - type: input
-    target: "Beneficiary IBAN"
+  - target: "Beneficiary IBAN"
     value: "INVALID"
     
-  - type: input
-    target: "0.00"
+  - target: "0.00"
     value: "-50"

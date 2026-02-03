@@ -32,25 +32,21 @@ extension Manuscript {
                   # 1. Search by Accessibility ID
                   # The most reliable method. Set .accessibilityIdentifier in your Swift code.
                   - target: "username_field" 
-                    type: "input"
                     value: "my_user"
 
                   # 2. Search by Label (Anchor)
                   # Useful for finding fields next to a static text label (e.g. "Password").
                   - target: "Password"       
-                    type: "input"
                     value: "secret123"
 
                   # 3. Search by Placeholder
                   # Finds a text field displaying this placeholder text.
                   - target: "Enter your email"
-                    type: "input"
                     value: "test@example.com"
                   
                   # 4. Search by Value
                   # Finds a field that already contains this specific text value.
                   - target: "Existing Value"
-                    type: "input"
                     value: "New Value"
                 """
                 

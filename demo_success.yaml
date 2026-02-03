@@ -2,21 +2,17 @@ name: "Demo Success"
 description: "Demonstrates 4 search strategies: ID, Label, Placeholder, Value"
 steps:
   # 1. Search by ID
-  - type: input
-    target: "transfer_recipient"
+  - target: "transfer_recipient"
     value: "Elon Musk"
     
   # 2. Search by Label Anchor
-  - type: input
-    target: "Beneficiary IBAN"
+  - target: "Beneficiary IBAN"
     value: "DE89370400440532013000"
     
   # 3. Search by Placeholder
-  - type: input
-    target: "0.00"
+  - target: "0.00"
     value: "420.00"
     
   # 4. Search by Value (Pre-filled)
-  - type: input
-    target: "Invoice Payment"
+  - target: "Invoice Payment"
     value: "Mars Ticket"

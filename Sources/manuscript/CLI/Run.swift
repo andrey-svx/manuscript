@@ -3,31 +3,55 @@ import Foundation
 import AppKit
 import ApplicationServices
 
+extension ResolutionScope: EnumerableFlag {
+    public static func help(for value: ResolutionScope) -> ArgumentHelp? {
+        switch value {
+        case .project: return "Search in .manuscript folder (default)."
+        case .local: return "Search in current directory."
+        case .global: return "Search in global templates."
+        }
+    }
+}
+
 extension Manuscript {
     struct Run: ParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "Run a UI test scenario from a YAML config."
         )
 
-        @Argument(help: "Path to the YAML configuration file to run.")
-        var configPath: String
+        @Argument(help: "The filename of the configuration to run (including extension).")
+        var filename: String
+
+        @Flag(help: "The scope where to search for the file.")
+        var scope: ResolutionScope = .project
 
         @Flag(name: .long, help: "Print the full accessibility hierarchy dump of the active window.")
         var debug: Bool = false
 
         func run() throws {
+            // Resolve Path
+            let configURL: URL
+            do {
+                configURL = try PathResolver.resolve(filename: filename, scope: scope)
+            } catch {
+                logError(error.localizedDescription)
+                throw ExitCode(1)
+            }
+
             // Parse Config
-            log("Reading config: \(configPath)...")
+            log("Reading config: \(configURL.path)...")
             let config: ManuscriptConfig
             do {
-                config = try ConfigParser.parse(path: configPath)
+                config = try ConfigParser.parse(path: configURL.path)
             } catch {
                 logError("Failed to parse YAML: \(error)")
-                return // logError exits, but just in case
+                throw ExitCode(1)
             }
             
             log("\n📜 Manuscript: \(ANSI.bold)\(config.name)\(ANSI.reset)", color: ANSI.yellow)
-            log("   \(config.description)", color: ANSI.gray)
+            if let desc = config.description {
+                log("   \(desc)", color: ANSI.gray)
+            }
             log("-----------------------------------------")
             
             // 1. Get all booted simulators
@@ -38,30 +62,30 @@ extension Manuscript {
                 log("Found \(bootedDevices.count) booted simulator(s).", color: ANSI.gray)
             } catch {
                 logError(error.localizedDescription)
-                return
+                throw ExitCode(1)
             }
             
             if bootedDevices.isEmpty {
                 logError("No booted simulators found.")
-                return
+                throw ExitCode(1)
             }
             
             // 2. Connect to Simulator.app
             let apps = NSWorkspace.shared.runningApplications
             guard let simApp = apps.first(where: { $0.bundleIdentifier == "com.apple.iphonesimulator" }) else {
                 logError("Simulator.app is not running")
-                return
+                throw ExitCode(1)
             }
             guard let axApp = AccessibilityScanner.findSimulatorApp(pid: simApp.processIdentifier) else {
                 logError("Could not create AXUIElement for Simulator app")
-                return
+                throw ExitCode(1)
             }
             
             // 3. Find ACTIVE window
             log("Looking for active simulator window...")
             guard let result = AccessibilityScanner.findActiveSimulatorWindow(app: axApp, candidates: bootedDevices) else {
                 logError("Could not find any active window matching a booted simulator.")
-                return
+                throw ExitCode(1)
             }
             
             let (window, device) = result
@@ -113,23 +137,17 @@ extension Manuscript {
                     successCount += 1
                     print("\(ANSI.green)[OK]\(ANSI.reset) Found '\(step.target)' via \(strategyUsed)")
                     
-                    switch step.type {
-                    case .input:
-                        if let valueToEnter = step.value {
-                            if AccessibilityScanner.enterText(element: element, text: valueToEnter) {
-                                print("     Action: Entered \"\(valueToEnter)\"")
-                            } else {
-                                print("     Action: \(ANSI.red)Failed to enter text\(ANSI.reset)")
-                                failCount += 1 // Count partial failure as fail? Or warning? Let's count logic errors.
-                            }
+                    if let valueToEnter = step.value {
+                        if AccessibilityScanner.enterText(element: element, text: valueToEnter) {
+                            print("     Action: Entered \"\(valueToEnter)\"")
                         } else {
-                             // Read mode if no value provided (optional feature)
-                             let val = AccessibilityScanner.getValueOrDesc(element)
-                             print("     Value: \"\(val)\"")
+                            print("     Action: \(ANSI.red)Failed to enter text\(ANSI.reset)")
+                            failCount += 1 
                         }
-                    case .tap:
-                        // Future implementation
-                        print("     Action: Tap (Not implemented)")
+                    } else {
+                         // Read mode if no value provided
+                         let val = AccessibilityScanner.getValueOrDesc(element)
+                         print("     Value: \"\(val)\"")
                     }
                     
                 } else {
