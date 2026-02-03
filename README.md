@@ -1,5 +1,9 @@
 # 📜 Manuscript
 
+![Swift 5.9+](https://img.shields.io/badge/Swift-5.9+-orange.svg)
+![macOS 13+](https://img.shields.io/badge/macOS-13+-blue.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 **Stop typing test data manually.** Manuscript auto-fills forms on your iOS Simulator using simple YAML configs.
 
 No test frameworks. No code injection. No rebuilding. Just run a command and watch the magic.
@@ -13,6 +17,7 @@ No test frameworks. No code injection. No rebuilding. Just run a command and wat
 ```bash
 git clone https://github.com/andrey-svx/manuscript.git
 cd manuscript
+git checkout 1.0.0
 make install
 ```
 
@@ -124,6 +129,19 @@ manuscript --help          # All commands
 manuscript run --help      # Run options
 manuscript init --help     # Project setup
 ```
+
+---
+
+## 💬 Feedback
+
+Found a bug or have a feature request?  
+→ [Open an Issue](https://github.com/andrey-svx/manuscript/issues)
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first.
 
 ---
 
