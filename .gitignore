@@ -32,31 +32,52 @@ playground.xcworkspace
 .build/
 
 # CocoaPods
-#
-# We recommend against adding the Pods directory to your .gitignore. However
-# you should judge for yourself, the pros and cons are mentioned at:
-# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
-#
-# Pods/
-#
-# Add this line if you want to avoid checking in source code from the Xcode workspace
-# *.xcworkspace
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
+# --- Xcode ---
+*.xcodeproj
+!ManuscriptApp.swiftpm/Package.swift # Исключение, если мы хотим трекать Package.swift внутри демо-аппа
+*.xcworkspace
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
 
-Carthage/Build/
+# --- Swift Package Manager ---
+.build/
+.swiftpm/
+# Package.resolved - Мы ХОТИМ его коммитить для CLI тулов, поэтому НЕ добавляем сюда.
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo.
-# Instead, use fastlane to re-generate the screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/#source-control
+# --- SPM Cache ---
+Packages/
+Package.pins
 
+# --- CocoaPods (на всякий случай, если демо-апп обрастет ими) ---
+Pods/
+Podfile.lock
+
+# --- Fastlane ---
 fastlane/report.xml
 fastlane/Preview.html
-fastlane/screenshots/**/*.png
+fastlane/screenshots
 fastlane/test_output
+
+# --- Editors ---
+.idea/
+.vscode/
+*.swp
+*~
+*.swo
+
+# --- Misc ---
+*.class
+*.log
+*.lock
+tags
