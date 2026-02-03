@@ -1,0 +1,10 @@
+title: "SwiftUI Registration Screen"
+fields:
+  - id: "swiftui_username"
+    value: "swiftui_hero"
+  - id: "swiftui_password"
+    value: "swiftpass"
+  - id: "swiftui_email"
+    value: "hero@swiftui.com"
+  - placeholder: "Search SwiftUI..."
+    value: "SwiftUI Query"
