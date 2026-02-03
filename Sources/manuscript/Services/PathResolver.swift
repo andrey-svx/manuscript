@@ -2,7 +2,7 @@ import Foundation
 
 enum ResolutionScope: String, CaseIterable {
     case project
-    case local
+    case current
     case global
 }
 
@@ -28,7 +28,7 @@ struct PathResolver {
         switch scope {
         case .project:
             return currentDirectory.appendingPathComponent(".manuscript")
-        case .local:
+        case .current:
             return currentDirectory
         case .global:
             let executablePath = ProcessInfo.processInfo.arguments[0]

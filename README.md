@@ -36,7 +36,7 @@ steps:
 ### 3. Run
 
 ```bash
-manuscript run login.yaml --local
+manuscript run login.yaml --current
 ```
 
 ✅ Done! Your simulator form is filled.
@@ -51,8 +51,8 @@ Perfect for instant testing. Keep YAML files wherever you want:
 
 ```bash
 # Run from any location
-manuscript run ~/Desktop/checkout.yaml --local
-manuscript run ./test-data/profile.yaml --local
+manuscript run ~/Desktop/checkout.yaml --current
+manuscript run ./test-data/profile.yaml --current
 ```
 
 ### Pattern B: Team Integration (Project Folder)
@@ -91,7 +91,7 @@ Manuscript finds fields using **4 smart strategies** (in order):
 name: "Bank Transfer"
 steps:
   - target: "transfer_recipient"      # Found by ID
-    value: "Elon Musk"
+    value: "John Doe"
     
   - target: "Beneficiary IBAN"        # Found by label
     value: "DE89370400440532013000"

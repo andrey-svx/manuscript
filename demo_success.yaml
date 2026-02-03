@@ -3,7 +3,7 @@ description: "Demonstrates 4 search strategies: ID, Label, Placeholder, Value"
 steps:
   # 1. Search by ID
   - target: "transfer_recipient"
-    value: "Elon Musk"
+    value: "John Doe"
     
   # 2. Search by Label Anchor
   - target: "Beneficiary IBAN"
