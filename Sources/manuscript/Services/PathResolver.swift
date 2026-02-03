@@ -21,47 +21,36 @@ struct PathResolver {
         }
     }
     
-    static func resolve(filename: String, scope: ResolutionScope) throws -> URL {
-        // 1. Enforce extension
-        if (filename as NSString).pathExtension.isEmpty {
-            throw ResolverError.missingExtension(filename: filename)
-        }
-        
+    static func getDirectory(for scope: ResolutionScope) -> URL {
         let fileManager = FileManager.default
         let currentDirectory = URL(fileURLWithPath: fileManager.currentDirectoryPath)
         
-        var targetURL: URL
-        
         switch scope {
         case .project:
-            // ./.manuscript/<filename>
-            targetURL = currentDirectory
-                .appendingPathComponent(".manuscript")
-                .appendingPathComponent(filename)
-            
+            return currentDirectory.appendingPathComponent(".manuscript")
         case .local:
-            // ./<filename>
-            targetURL = currentDirectory
-                .appendingPathComponent(filename)
-            
+            return currentDirectory
         case .global:
-            // <executable_dir>/../templates/<filename>
             let executablePath = ProcessInfo.processInfo.arguments[0]
             let executableURL = URL(fileURLWithPath: executablePath)
-            // executableURL is .../manuscript (the file)
-            // deletingLastPathComponent gets the directory containing the executable
-            // appending ".." or resolving parent to get to sibling folder "templates" if it's strictly adjacent to bin?
-            // User requested: "<executable_dir>/../templates/"
-            // If executable is in "bin", then ".." goes to root, then "templates".
-            targetURL = executableURL
-                .deletingLastPathComponent() // Directory of executable
-                .deletingLastPathComponent() // Parent of directory (e.g. root of install)
+            return executableURL
+                .deletingLastPathComponent()
+                .deletingLastPathComponent()
                 .appendingPathComponent("templates")
-                .appendingPathComponent(filename)
         }
+    }
+
+    static func getFileURL(filename: String, scope: ResolutionScope) throws -> URL {
+        if (filename as NSString).pathExtension.isEmpty {
+            throw ResolverError.missingExtension(filename: filename)
+        }
+        return getDirectory(for: scope).appendingPathComponent(filename)
+    }
+    
+    static func resolve(filename: String, scope: ResolutionScope) throws -> URL {
+        let targetURL = try getFileURL(filename: filename, scope: scope)
         
-        // 2. Check existence
-        if !fileManager.fileExists(atPath: targetURL.path) {
+        if !FileManager.default.fileExists(atPath: targetURL.path) {
             throw ResolverError.fileNotFound(path: targetURL.path)
         }
         
