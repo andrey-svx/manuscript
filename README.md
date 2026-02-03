@@ -1,104 +1,132 @@
 # 📜 Manuscript
 
-**Manuscript** is a lightweight, zero-dependency Swift CLI tool for **black-box UI testing** of iOS Apps running in the Simulator. 
+**Stop typing test data manually.** Manuscript auto-fills forms on your iOS Simulator using simple YAML configs.
 
-It inspects the screen using the macOS Accessibility API, finds UI elements (TextFields) based on a flexible YAML configuration, and fills them with data.
-
-> 🚀 **Why Manuscript?**
-> Unlike XCUITest or Appium, Manuscript runs *externally* from your Mac terminal. It doesn't require injecting code into your app, rebuilding your project, or launching a heavy test runner. It just looks at the Simulator window and interacts with it like a user would.
+No test frameworks. No code injection. No rebuilding. Just run a command and watch the magic.
 
 ---
 
-## ✨ Features
+## ⚡ Quick Start (60 seconds)
 
-- **🔎 Smart Universal Search**: Finds elements using a cascading strategy:
-  1. **Accessibility ID** (Best for testability)
-  2. **Label Anchor** (Finds input next to a specific text label)
-  3. **Placeholder Text** (Matches placeholder value)
-  4. **Value Match** (Finds fields already filled with specific text)
-- **🧠 Intelligent Simulator Selection**: Automatically detects and connects to the active Simulator window (z-order based). Supports multiple booted devices.
-- **⚡️ Zero Dependencies**: Single-file Swift script. No `npm`, `gem`, `pip`, or compiled binary requirements.
-- **📱 Framework Agnostic**: Works perfectly with both **UIKit** (even complex nested hierarchies) and **SwiftUI**.
-- **♻️ Reentrant**: Can be run multiple times safely. If a field is already filled, it detects it and skips.
-
----
-
-## 📦 Installation
-
-Since Manuscript is a standalone script, installation is as simple as downloading it.
+### 1. Install
 
 ```bash
-# Make the script executable
-chmod +x manuscript.swift
+git clone https://github.com/andrey-svx/manuscript.git
+cd manuscript
+make install
 ```
 
----
-
-## 🚀 Usage
-
-Run the script providing a path to your configuration file:
-
-```bash
-./manuscript.swift --screen my_screen_config.yaml
-```
-
-**Note**: On first run, macOS will ask for **Accessibility Permissions** for your terminal app (e.g., Terminal, iTerm, VSCode). This is required to inspect the Simulator window.
-
----
-
-## 🛠 Configuration
-
-Manuscript uses simple YAML files to define what to look for and what to type.
-
-### Example `login.yaml`
+### 2. Create a simple config
 
 ```yaml
-title: "Login Screen Test"
-
-fields:
-  # Strategy 1: Best Practice (Explicit ID)
-  - id: "username_field"
-    value: "test_user"
-
-  # Strategy 2: Search by Label (Great for 3rd party UI)
-  # Finds static text "Password" and types in the next field found
-  - label: "Password"
+# login.yaml
+name: "Login Form"
+steps:
+  - target: "email_field"
+    value: "dev@example.com"
+  - target: "Password"
     value: "secret123"
-
-  # Strategy 3: Search by Placeholder
-  - placeholder: "Email Address"
-    value: "john@example.com"
-
-  # Strategy 4: Visual Search (Just finds a field with this value)
-  - value: "Pre-filled text"
 ```
 
-### Field Options
+### 3. Run
 
-| Key | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | `String` | No | The `accessibilityIdentifier` of the element (or its container). |
-| `label` | `String` | No | Text of a static label physically located before/near the target field. |
-| `placeholder` | `String` | No | The placeholder text inside the empty field. |
-| `value` | `String` | **Yes** | The text to type into the field. Also used for "Value Match" strategy. |
+```bash
+manuscript run login.yaml --local
+```
 
----
-
-## ⚙️ How It Works
-
-Manuscript connects to the `Simulator.app` process via the macOS Accessibility API (`AXUIElement`).
-
-1. **Discovery**: It scans active windows to find the one belonging to the currently active Simulator device.
-2. **Analysis**: It parses the YAML config and iterates through requested fields.
-3. **Execution**: For each field, it attempts to find a match using the **Universal Search Strategy**:
-   - **Step 1**: Does an element with this `id` exist? (Handles nested groups automatically).
-   - **Step 2**: If no ID, is there a Label with text `label`? If yes, find the nearest TextField.
-   - **Step 3**: Is there a TextField with `placeholder` value?
-   - **Step 4**: Is there a TextField that already contains `value`?
-4. **Action**: Once found, it injects the text value directly.
+✅ Done! Your simulator form is filled.
 
 ---
 
-## 📝 License
+## 🎯 Two Usage Patterns
 
-MIT License. Feel free to use and modify.
+### Pattern A: Quick & Dirty (Files Anywhere)
+
+Perfect for instant testing. Keep YAML files wherever you want:
+
+```bash
+# Run from any location
+manuscript run ~/Desktop/checkout.yaml --local
+manuscript run ./test-data/profile.yaml --local
+```
+
+### Pattern B: Team Integration (Project Folder)
+
+Initialize Manuscript in your project root:
+
+```bash
+cd YourProject
+manuscript init
+```
+
+This creates `.manuscript/` folder with example config. Now your team runs:
+
+```bash
+manuscript run login.yaml           # Uses .manuscript/login.yaml
+manuscript list                     # Shows all available configs
+```
+
+> 📚 **Want more?** Manuscript supports config management, templates, and team workflows.  
+> Run `manuscript --help` to explore all commands.
+
+---
+
+## 📝 Configuration
+
+Manuscript finds fields using **4 smart strategies** (in order):
+
+| Strategy | Target Value | Example |
+|----------|--------------|---------|
+| **1. Accessibility ID** | `accessibilityIdentifier` | `"email_field"` |
+| **2. Label Anchor** | Text label near field | `"Password"` |
+| **3. Placeholder** | Placeholder text | `"Enter amount"` |
+| **4. Current Value** | Pre-filled content | `"Invoice Payment"` |
+
+```yaml
+name: "Bank Transfer"
+steps:
+  - target: "transfer_recipient"      # Found by ID
+    value: "Elon Musk"
+    
+  - target: "Beneficiary IBAN"        # Found by label
+    value: "DE89370400440532013000"
+    
+  - target: "0.00"                    # Found by placeholder
+    value: "420.00"
+```
+
+---
+
+## ⚠️ Limitations
+
+| Constraint | Details |
+|------------|---------|
+| **macOS only** | Uses macOS Accessibility API |
+| **iOS Simulator only** | Cannot run on real devices |
+| **Text fields only** | Works with TextField/TextArea, not buttons or pickers |
+| **App must be running** | Simulator with your app must be booted and visible |
+| **Accessibility permission** | Terminal needs Accessibility access in System Settings |
+
+---
+
+## 🔐 First Run: Grant Permissions
+
+On first run, macOS will ask for Accessibility permissions:
+
+**System Settings → Privacy & Security → Accessibility → Enable your terminal**
+
+---
+
+## 🛠 Learn More
+
+```bash
+manuscript --help          # All commands
+manuscript run --help      # Run options
+manuscript init --help     # Project setup
+```
+
+---
+
+## 📄 License
+
+MIT © 2026 andrey-svx
