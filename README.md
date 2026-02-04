@@ -8,9 +8,8 @@
 
 No test frameworks. No code injection. No rebuilding. Just run a command and watch the magic.
 
----
 
-## ⚡ Quick Start (60 seconds)
+## Quick Start (60 seconds)
 
 ### 1. Install
 
@@ -18,7 +17,7 @@ No test frameworks. No code injection. No rebuilding. Just run a command and wat
 git clone https://github.com/andrey-svx/manuscript.git
 cd manuscript
 git checkout 1.0.0
-make install
+sudo make install
 ```
 
 ### 2. Create a simple config
@@ -41,9 +40,8 @@ manuscript run login.yaml --current
 
 ✅ Done! Your simulator form is filled.
 
----
 
-## 🎯 Two Usage Patterns
+## Two Usage Patterns
 
 ### Pattern A: Quick & Dirty (Files Anywhere)
 
@@ -74,9 +72,8 @@ manuscript list                     # Shows all available configs
 > 📚 **Want more?** Manuscript supports config management, templates, and team workflows.  
 > Run `manuscript --help` to explore all commands.
 
----
 
-## 📝 Configuration
+## Configuration
 
 Manuscript finds fields using **4 smart strategies** (in order):
 
@@ -100,9 +97,8 @@ steps:
     value: "420.00"
 ```
 
----
 
-## ⚠️ Limitations
+## Limitations
 
 | Constraint | Details |
 |------------|---------|
@@ -112,17 +108,15 @@ steps:
 | **App must be running** | Simulator with your app must be booted and visible |
 | **Accessibility permission** | Terminal needs Accessibility access in System Settings |
 
----
 
-## 🔐 First Run: Grant Permissions
+## First Run: Grant Permissions
 
 On first run, macOS will ask for Accessibility permissions:
 
 **System Settings → Privacy & Security → Accessibility → Enable your terminal**
 
----
 
-## 🛠 Learn More
+## Learn More
 
 ```bash
 manuscript --help          # All commands
@@ -130,21 +124,18 @@ manuscript run --help      # Run options
 manuscript init --help     # Project setup
 ```
 
----
 
-## 💬 Feedback
+## Feedback
 
 Found a bug or have a feature request?  
 → [Open an Issue](https://github.com/andrey-svx/manuscript/issues)
 
----
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome! For major changes, please open an issue first.
 
----
 
-## 📄 License
+## License
 
 MIT © 2026 andrey-svx
