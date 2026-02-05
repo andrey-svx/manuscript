@@ -127,6 +127,8 @@ manuscript run --help      # Run options
 manuscript init --help     # Project setup
 ```
 
+**Article:** [Fill iOS Simulator Forms in 60 Seconds](https://medium.com/@andron.isaev/fill-ios-simulator-forms-in-60-seconds-a-cli-tool-with-zero-dependencies-f4154e466806) — why I built this tool
+
 
 ## Feedback
 
