@@ -8,6 +8,9 @@
 
 No test frameworks. No code injection. No rebuilding. Just run a command and watch the magic.
 
+<p align="center">
+  <img src="assets/demo.gif" alt="Demo" width="600">
+</p>
 
 ## Quick Start (60 seconds)
 
