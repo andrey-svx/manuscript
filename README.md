@@ -9,7 +9,7 @@
 No test frameworks. No code injection. No rebuilding. Just run a command and watch the magic.
 
 <p align="center">
-  <img src="assets/demo.gif" alt="Demo" width="800">
+  <img src="assets/demo.gif" alt="Manuscript automatically fills a form in iOS Simulator" width="800">
 </p>
 
 ## Quick Start (60 seconds)
